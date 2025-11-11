@@ -3,26 +3,26 @@
 Realtime, modular hand-tracking utilities intended to grow into a richer robotics data collection toolkit.
 
 ## Getting started
-1. Create a virtual environment (Python >= 3.12) and install dependencies:
+1. Create a virtual environment (Python >= 3.12) and install dependencies with `uv`:
    ```bash
-   python -m venv .venv
+   uv venv .venv
    source .venv/bin/activate
-   pip install -e .
+   uv pip install -e .
    ```
 2. Run the realtime tracker (press `Ctrl+C` to stop):
    ```bash
-   python main.py --device-index 0 --max-num-hands 2
+   uv run main.py --device-index 0 --max-num-hands 2
    ```
    Optional arguments let you control resolution and MediaPipe confidence thresholds.
    The app opens a preview window with landmark overlays—press `q`/`Esc` to close it or pass `--no-preview` to disable the window.
    > On macOS you must grant the terminal camera access under **System Settings → Privacy & Security → Camera** the first time you run the app.
 3. Preview detections on a recorded video (no logging):
    ```bash
-   python preview.py --video-path data/videos/sample.mp4
+   uv run preview.py --video-path data/videos/sample.mp4
    ```
 4. Process a video and log detections to columnar storage:
    ```bash
-   python process_video.py --video-path data/videos/sample.mp4 --log-path logs/sample.parquet
+   uv run process_video.py --video-path data/videos/sample.mp4 --log-path logs/sample.parquet
    ```
    Add `--preview` to watch the overlay while the log is produced. The pipeline writes the detailed detections to the Parquet file and saves per-frame hand counts to `<log-path>.summary.json`.
 
