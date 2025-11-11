@@ -31,19 +31,20 @@ class RealTimeHandTrackingPipeline:
     def run(self) -> None:
         """Continuously read frames, detect hands, and stream results."""
 
-        with self.camera as camera:
-            try:
-                for frame in camera.frames():
-                    positions = self.detector.detect(frame)
-                    self.output_fn(positions)
-                    if self.visualizer:
-                        keep_running = self.visualizer.render(frame, positions)
-                        if not keep_running:
-                            break
-                    time.sleep(0.01)
-            except KeyboardInterrupt:
-                print("\nStopping realtime hand tracking...")
-            finally:
-                self.detector.close()
-                if self.visualizer:
-                    self.visualizer.close()
+        try:
+            with self.camera as camera:
+                try:
+                    for frame in camera.frames():
+                        positions = self.detector.detect(frame)
+                        self.output_fn(positions)
+                        if self.visualizer:
+                            keep_running = self.visualizer.render(frame, positions)
+                            if not keep_running:
+                                break
+                        time.sleep(0.01)
+                except KeyboardInterrupt:
+                    print("\nStopping realtime hand tracking...")
+        finally:
+            self.detector.close()
+            if self.visualizer:
+                self.visualizer.close()
