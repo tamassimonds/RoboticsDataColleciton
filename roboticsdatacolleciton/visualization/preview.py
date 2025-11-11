@@ -1,8 +1,8 @@
 """Utilities for visualizing detected hands on a live preview window."""
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, Iterable, Tuple
+from dataclasses import dataclass, field
+from typing import Any, Dict, Iterable, List, Tuple
 
 import cv2
 import mediapipe as mp
@@ -17,10 +17,12 @@ class HandPreviewRenderer:
     window_name: str = "Hand Tracking"
     circle_radius: int = 4
     line_thickness: int = 2
+    _connections: List[Tuple[str, str]] = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         self._connections = [
-            (start.name, end.name) for start, end in mp.solutions.hands.HAND_CONNECTIONS
+            (self._landmark_name(start), self._landmark_name(end))
+            for start, end in mp.solutions.hands.HAND_CONNECTIONS
         ]
 
     def render(self, frame, positions: Iterable[HandPosition]) -> bool:
@@ -91,3 +93,8 @@ class HandPreviewRenderer:
             "Right": (0, 200, 255),
         }
         return mapping.get(label, ((50 + idx * 70) % 255, 255, (150 + idx * 40) % 255))
+
+    def _landmark_name(self, landmark: Any) -> str:
+        if hasattr(landmark, "name"):
+            return landmark.name  # type: ignore[return-value]
+        return mp.solutions.hands.HandLandmark(int(landmark)).name
